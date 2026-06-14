@@ -99,6 +99,16 @@ def test_creature_type_counts_ignores_non_creature_subtypes() -> None:
     assert "Aura" not in counts
 
 
+def test_filter_format_handles_first_card_with_empty_legalities() -> None:
+    cards = (
+        _make_card("Empty Legalities Card", legalities={}),
+        _make_card("Legal Card", legalities={"commander": "Legal"}),
+        _make_card("Banned Card", legalities={"commander": "Banned"}),
+    )
+    result = MtgCardSet(cards).filter_format("commander")
+    assert {c.name for c in result} == {"Legal Card"}
+
+
 def test_creature_type_counts() -> None:
     cards = (
         _make_card("Elvish Mystic", types=["Creature"], subtypes=["Elf", "Druid"]),

@@ -13,6 +13,10 @@ from typing import cast
 
 logger = logging.getLogger(__name__)
 
+_opener = urllib.request.build_opener()
+_opener.addheaders = [("User-Agent", "Mozilla/5.0 (compatible; lonis/0.1)")]
+urllib.request.install_opener(_opener)
+
 _ATOMIC_CARDS_URL = "https://mtgjson.com/api/v5/AtomicCards.json"
 _DEFAULT_CACHE_DIR = Path.home() / ".cache" / "lonis"
 
