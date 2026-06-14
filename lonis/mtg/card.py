@@ -16,6 +16,7 @@ class MtgCard:
     types: frozenset[str]
     subtypes: frozenset[str]
     supertypes: frozenset[str]
+    color_identity: frozenset[str]
     legalities: dict[str, str] = field(hash=False, compare=False)
     is_funny: bool
 
@@ -37,16 +38,19 @@ class MtgCard:
         types: frozenset[str] = frozenset()
         subtypes: frozenset[str] = frozenset()
         supertypes: frozenset[str] = frozenset()
+        color_identity: frozenset[str] = frozenset()
         for face in faces:
             types = types | frozenset(face.get("types", []))
             subtypes = subtypes | frozenset(face.get("subtypes", []))
             supertypes = supertypes | frozenset(face.get("supertypes", []))
+            color_identity = color_identity | frozenset(face.get("colorIdentity", []))
         return cls(
             name=name,
             layout=layout,
             types=types,
             subtypes=subtypes,
             supertypes=supertypes,
+            color_identity=color_identity,
             legalities=dict(first.get("legalities", {})),
             is_funny=bool(first.get("isFunny", False)),
         )

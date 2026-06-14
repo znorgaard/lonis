@@ -9,6 +9,7 @@ def _face(
     types: list[str] | None = None,
     subtypes: list[str] | None = None,
     supertypes: list[str] | None = None,
+    color_identity: list[str] | None = None,
     legalities: dict[str, str] | None = None,
     is_funny: bool = False,
 ) -> dict[str, object]:
@@ -17,6 +18,7 @@ def _face(
         "types": types or [],
         "subtypes": subtypes or [],
         "supertypes": supertypes or [],
+        "colorIdentity": color_identity or [],
         "legalities": legalities or {},
         "isFunny": is_funny,
     }
@@ -84,6 +86,23 @@ def test_card_is_hashable() -> None:
     assert card is not None
     assert hash(card) is not None
     assert len({card, card}) == 1
+
+
+def test_from_atomic_entry_color_identity() -> None:
+    faces = [
+        _face(layout="transform", types=["Creature"], color_identity=["R", "G"], legalities={}),
+        _face(layout="transform", types=["Creature"], color_identity=["R"], legalities={}),
+    ]
+    card = MtgCard.from_atomic_entry("Huntmaster of the Fells // Ravager of the Fells", faces)
+    assert card is not None
+    assert card.color_identity == frozenset({"R", "G"})
+
+
+def test_from_atomic_entry_colorless_card() -> None:
+    faces = [_face(types=["Artifact", "Creature"], color_identity=[], legalities={})]
+    card = MtgCard.from_atomic_entry("Blightsteel Colossus", faces)
+    assert card is not None
+    assert card.color_identity == frozenset()
 
 
 def test_from_atomic_entry_is_funny_flag() -> None:

@@ -9,6 +9,7 @@ from typing import Any
 from lonis.mtg.card import MtgCard
 
 _LEGAL = "Legal"
+_VALID_COLORS = frozenset("WUBRG")
 
 
 class MtgCardSet:
@@ -64,6 +65,26 @@ class MtgCardSet:
             if fmt not in valid_formats:
                 raise ValueError(f"Unknown format {fmt!r}. Valid formats: {sorted(valid_formats)}")
         return MtgCardSet(tuple(c for c in self._cards if c.legalities.get(fmt) == _LEGAL))
+
+    def filter_color_identity(self, colors: str) -> MtgCardSet:
+        """Return only cards whose color identity is a subset of the given colors.
+
+        Args:
+            colors: Color identity as MTG color letters (W, U, B, R, G), e.g. "WUG".
+                    Only cards whose color identity is a subset of these colors are included.
+                    Pass an empty string to return only colorless cards.
+
+        Returns:
+            A filtered MtgCardSet.
+
+        Raises:
+            ValueError: If any character is not a valid MTG color letter.
+        """
+        color_set = frozenset(colors.upper())
+        invalid = color_set - _VALID_COLORS
+        if invalid:
+            raise ValueError(f"Invalid color(s): {sorted(invalid)}. Valid colors: W, U, B, R, G")
+        return MtgCardSet(tuple(c for c in self._cards if c.color_identity.issubset(color_set)))
 
     def filter_creatures(self) -> MtgCardSet:
         """Return a new MtgCardSet containing only cards with the Creature type.

@@ -13,6 +13,7 @@ def _make_card(
     *,
     types: list[str] | None = None,
     subtypes: list[str] | None = None,
+    color_identity: list[str] | None = None,
     legalities: dict[str, str] | None = None,
 ) -> MtgCard:
     return MtgCard(
@@ -21,6 +22,7 @@ def _make_card(
         types=frozenset(types or []),
         subtypes=frozenset(subtypes or []),
         supertypes=frozenset(),
+        color_identity=frozenset(color_identity or []),
         legalities=legalities or {},
         is_funny=False,
     )
@@ -107,6 +109,32 @@ def test_filter_format_handles_first_card_with_empty_legalities() -> None:
     )
     result = MtgCardSet(cards).filter_format("commander")
     assert {c.name for c in result} == {"Legal Card"}
+
+
+def test_filter_color_identity_keeps_cards_within_identity() -> None:
+    cards = (
+        _make_card("Mono-Green", color_identity=["G"]),
+        _make_card("Green-White", color_identity=["G", "W"]),
+        _make_card("Red", color_identity=["R"]),
+        _make_card("Colorless", color_identity=[]),
+    )
+    result = MtgCardSet(cards).filter_color_identity("GW")
+    assert {c.name for c in result} == {"Mono-Green", "Green-White", "Colorless"}
+
+
+def test_filter_color_identity_colorless_only() -> None:
+    cards = (
+        _make_card("Colorless", color_identity=[]),
+        _make_card("Blue Card", color_identity=["U"]),
+    )
+    result = MtgCardSet(cards).filter_color_identity("")
+    assert {c.name for c in result} == {"Colorless"}
+
+
+def test_filter_color_identity_raises_on_invalid_color() -> None:
+    cards = (_make_card("Card", color_identity=["G"]),)
+    with pytest.raises(ValueError, match="Invalid color"):
+        MtgCardSet(cards).filter_color_identity("X")
 
 
 def test_creature_type_counts() -> None:
