@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`lonis` is a Python toolkit for genetics and genomics analysis. It exposes a unified CLI where each sub-command is a plain Python function dispatched by [`defopt`](https://defopt.readthedocs.io/).
+`lonis` is a Python toolkit for analyzing Magic: The Gathering card data. It exposes a unified CLI where each sub-command is a plain Python function dispatched by [`defopt`](https://defopt.readthedocs.io/).
 
 ## Commands
 
@@ -18,8 +18,8 @@ All commands use `uv run --locked poe <task>`. Key tasks defined in `pyproject.t
 | `uv run --locked poe check-typing` | Run mypy only |
 | `uv run --locked poe fix-all` | Auto-fix format and lint |
 
-Run a single test file: `uv run --locked pytest tests/tools/test_hello.py`  
-Run a single test: `uv run --locked pytest tests/tools/test_hello.py::test_hello_default`
+Run a single test file: `uv run --locked pytest tests/tools/test_creature_types.py`  
+Run a single test: `uv run --locked pytest tests/tools/test_creature_types.py::test_creature_types_writes_correct_types`
 
 ## Architecture
 
@@ -43,3 +43,4 @@ Run a single test: `uv run --locked pytest tests/tools/test_hello.py::test_hello
 - **Docstrings**: Google convention; required on all public functions/classes
 - **Type hints**: strict mypy — all defs must be fully typed, `Any` is disallowed
 - **Ruff**: linting and formatting; see `[tool.ruff.lint]` in `pyproject.toml` for enabled rule sets
+- **Builtin shadowing (A002)**: avoid Python builtin names as parameter names (e.g. use `fmt` not `format`)
