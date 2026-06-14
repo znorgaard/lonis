@@ -7,12 +7,10 @@ from collections.abc import Callable
 import defopt
 
 from lonis.tools.creature_types import creature_types
-from lonis.tools.hello import hello
 
 logger = logging.getLogger(__name__)
 
 _tools: list[Callable[..., None]] = [
-    hello,
     creature_types,
 ]
 
