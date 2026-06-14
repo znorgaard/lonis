@@ -1,0 +1,29 @@
+name: Python package checks
+
+on:
+  push:
+  pull_request:
+
+env:
+  UV_VERSION: 0.9.5
+
+jobs:
+  Tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PYTHON_VERSION: ["3.12", "3.13"]
+    steps:
+      - name: Checkout from GitHub
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ${{ env.UV_VERSION }}
+          python-version: ${{ matrix.PYTHON_VERSION }}
+          enable-cache: 'true'
+          cache-suffix: ${{ matrix.PYTHON_VERSION }}
+
+      - name: Test the library
+        run: uv run --locked poe check-all
