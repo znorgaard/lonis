@@ -21,8 +21,7 @@ class MtgCard:
 
     @classmethod
     def from_atomic_entry(cls, name: str, faces: list[dict[str, Any]]) -> MtgCard | None:
-        """
-        Build an MtgCard from an AtomicCards entry.
+        """Build an MtgCard from an AtomicCards entry.
 
         Args:
             name: The card name (the key in the AtomicCards dict).

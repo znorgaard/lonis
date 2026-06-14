@@ -127,9 +127,7 @@ select    = [
     "ARG",    # Unused arguments
     "C901",   # McCabe complexity
     "B",      # bugbear
-    "D",      # pydocstyle (docstrings. We have the "google" convention enabled)
-    "D204",   # Blank line between class docstring and first (__init__) method
-    "D213",   # Summary line should be located on the line after opening quotes
+    "D",      # pydocstyle (docstrings; Google convention enforces D212 summary-on-first-line)
     "E",      # pycodestyle errors
     "LOG",    # flake8-logging
     "LOG015", # (preview rule) Prohibit calls to the root logger
@@ -145,7 +143,6 @@ select    = [
 ignore    = [
     "E203",
     "E701",
-    "D212",  # summary line should be located on the same line as opening quotes
     "D100",  # missing docstring in public module
     "D104",  # missing docstring in public package
 ]

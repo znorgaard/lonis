@@ -15,8 +15,7 @@ class MtgCardSet:
     """An immutable collection of unique Magic: The Gathering cards."""
 
     def __init__(self, cards: tuple[MtgCard, ...]) -> None:
-        """
-        Create an MtgCardSet from a tuple of cards.
+        """Create an MtgCardSet from a tuple of cards.
 
         Args:
             cards: The cards in this set.
@@ -29,8 +28,7 @@ class MtgCardSet:
 
     @classmethod
     def from_atomic_data(cls, data: dict[str, list[dict[str, Any]]]) -> MtgCardSet:
-        """
-        Build an MtgCardSet from a parsed AtomicCards dict.
+        """Build an MtgCardSet from a parsed AtomicCards dict.
 
         Args:
             data: The value of the "data" key in AtomicCards JSON — card name to list of faces.
@@ -46,8 +44,7 @@ class MtgCardSet:
         return cls(tuple(cards))
 
     def filter_format(self, fmt: str) -> MtgCardSet:
-        """
-        Return a new MtgCardSet containing only cards legal in the given format.
+        """Return a new MtgCardSet containing only cards legal in the given format.
 
         Args:
             fmt: Format name, e.g. "commander", "modern", "standard".
@@ -69,8 +66,7 @@ class MtgCardSet:
         return MtgCardSet(tuple(c for c in self._cards if c.legalities.get(fmt) == _LEGAL))
 
     def filter_creatures(self) -> MtgCardSet:
-        """
-        Return a new MtgCardSet containing only cards with the Creature type.
+        """Return a new MtgCardSet containing only cards with the Creature type.
 
         Returns:
             A filtered MtgCardSet.
@@ -78,8 +74,7 @@ class MtgCardSet:
         return MtgCardSet(tuple(c for c in self._cards if "Creature" in c.types))
 
     def creature_type_counts(self) -> dict[str, int]:
-        """
-        Count how many cards of each creature subtype are in this set.
+        """Count how many cards of each creature subtype are in this set.
 
         Returns:
             A dict mapping creature subtype to number of cards with that subtype.

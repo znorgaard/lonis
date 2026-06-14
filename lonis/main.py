@@ -16,8 +16,7 @@ _tools: list[Callable[..., None]] = [
 
 
 def setup_logging(level: str = "INFO") -> None:
-    """
-    Set up basic logging to print to the console.
+    """Set up basic logging to print to the console.
 
     Args:
         level: Logging level string (e.g. "INFO", "DEBUG", "WARNING").

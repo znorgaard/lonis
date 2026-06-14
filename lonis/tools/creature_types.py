@@ -22,8 +22,7 @@ class CreatureTypeMetric(Metric):
 
 
 def creature_types(*, output: Path, fmt: str = "commander") -> None:
-    """
-    Report all creature types and the number of cards with each type in a format.
+    """Report all creature types and the number of cards with each type in a format.
 
     Args:
         output: Path to write the output TSV file.

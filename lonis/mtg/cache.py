@@ -22,15 +22,13 @@ _DEFAULT_CACHE_DIR = Path.home() / ".cache" / "lonis"
 
 
 class MtgDataCache:
-    """
-    Manages a local cache of the AtomicCards JSON file from mtgjson.com.
+    """Manages a local cache of the AtomicCards JSON file from mtgjson.com.
 
     Downloads automatically when missing or older than today's date.
     """
 
     def __init__(self, cache_dir: Path = _DEFAULT_CACHE_DIR) -> None:
-        """
-        Create an MtgDataCache.
+        """Create an MtgDataCache.
 
         Args:
             cache_dir: Directory to store the cached file. Defaults to ~/.cache/lonis.
@@ -39,8 +37,7 @@ class MtgDataCache:
         self._cache_file = cache_dir / "AtomicCards.json"
 
     def load(self) -> dict[str, list[dict[str, Any]]]:
-        """
-        Return the AtomicCards data, downloading it if missing or stale.
+        """Return the AtomicCards data, downloading it if missing or stale.
 
         Returns:
             Dict mapping card name to list of face objects.
