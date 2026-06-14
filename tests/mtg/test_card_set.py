@@ -87,6 +87,18 @@ def test_filter_creatures_keeps_only_creature_cards() -> None:
     assert {c.name for c in result} == {"Creature Card", "Artifact Creature"}
 
 
+def test_creature_type_counts_ignores_non_creature_subtypes() -> None:
+    cards = (
+        _make_card("Llanowar Elves", types=["Creature"], subtypes=["Elf"]),
+        _make_card("Darksteel Citadel", types=["Artifact", "Land"], subtypes=["Artifact"]),
+        _make_card("Arrest", types=["Enchantment"], subtypes=["Aura"]),
+    )
+    counts = MtgCardSet(cards).creature_type_counts()
+    assert counts == {"Elf": 1}
+    assert "Artifact" not in counts
+    assert "Aura" not in counts
+
+
 def test_creature_type_counts() -> None:
     cards = (
         _make_card("Elvish Mystic", types=["Creature"], subtypes=["Elf", "Druid"]),

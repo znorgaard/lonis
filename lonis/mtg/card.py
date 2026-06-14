@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from dataclasses import field
 from typing import Any
 
 
@@ -15,7 +16,7 @@ class MtgCard:
     types: frozenset[str]
     subtypes: frozenset[str]
     supertypes: frozenset[str]
-    legalities: dict[str, str]
+    legalities: dict[str, str] = field(hash=False, compare=False)
     is_funny: bool
 
     @classmethod

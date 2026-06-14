@@ -78,6 +78,14 @@ def test_from_atomic_entry_token_returns_none() -> None:
     assert MtgCard.from_atomic_entry("Soldier Token", faces) is None
 
 
+def test_card_is_hashable() -> None:
+    faces = [_face(types=["Creature"], subtypes=["Elf"], legalities={"commander": "Legal"})]
+    card = MtgCard.from_atomic_entry("Elvish Mystic", faces)
+    assert card is not None
+    assert hash(card) is not None
+    assert len({card, card}) == 1
+
+
 def test_from_atomic_entry_is_funny_flag() -> None:
     faces = [
         _face(

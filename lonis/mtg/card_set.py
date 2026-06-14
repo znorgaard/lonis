@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterator
 from typing import Any
-from typing import Iterator
 
 from lonis.mtg.card import MtgCard
+
+_LEGAL = "Legal"
 
 
 class MtgCardSet:
@@ -57,10 +59,12 @@ class MtgCardSet:
             ValueError: If fmt is not a recognized format name.
         """
         if self._cards:
+            # Keys from the first card work here because mtgjson emits a consistent
+            # legalities object across all cards.
             valid_formats = set(self._cards[0].legalities.keys())
             if fmt not in valid_formats:
                 raise ValueError(f"Unknown format {fmt!r}. Valid formats: {sorted(valid_formats)}")
-        return MtgCardSet(tuple(c for c in self._cards if c.legalities.get(fmt) == "Legal"))
+        return MtgCardSet(tuple(c for c in self._cards if c.legalities.get(fmt) == _LEGAL))
 
     def filter_creatures(self) -> MtgCardSet:
         """
@@ -73,13 +77,16 @@ class MtgCardSet:
 
     def creature_type_counts(self) -> dict[str, int]:
         """
-        Count how many cards have each creature subtype.
+        Count how many cards of each creature subtype are in this set.
 
         Returns:
             A dict mapping creature subtype to number of cards with that subtype.
+            Only cards with the Creature type contribute to the count.
         """
         counter: Counter[str] = Counter()
         for card in self._cards:
+            if "Creature" not in card.types:
+                continue
             for subtype in card.subtypes:
                 counter[subtype] += 1
         return dict(counter)
