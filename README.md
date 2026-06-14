@@ -4,6 +4,8 @@ Python toolkit for analyzing magic the gathering card data from [mtgjson.com](ht
 
 Named after [Lonis, Genetics Expert](https://scryfall.com/card/mh3/185/lonis-genetics-expert) from Magic: The Gathering.
 
+![Lonis, Genetics Expert](resources/clu-37-lonis-genetics-expert.jpg)
+
 ## Usage
 
 ```bash
