@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import urllib.error
 import urllib.request
 from datetime import date
 from pathlib import Path
@@ -51,6 +52,7 @@ class MtgDataCache:
         if not self._cache_file.exists():
             return True
         mtime = date.fromtimestamp(self._cache_file.stat().st_mtime)
+        # Stale means a prior calendar day (local time), not strictly 24 hours old.
         return mtime < date.today()
 
     def _download(self) -> None:
@@ -58,19 +60,24 @@ class MtgDataCache:
         logger.info("Downloading AtomicCards from %s", _ATOMIC_CARDS_URL)
         try:
             urllib.request.urlretrieve(_ATOMIC_CARDS_URL, self._cache_file)
-        except Exception as exc:
+        except (urllib.error.URLError, OSError) as exc:
             raise RuntimeError(f"Failed to download {_ATOMIC_CARDS_URL}: {exc}") from exc
         logger.info("AtomicCards cached at %s", self._cache_file)
 
     def _read(self) -> dict[str, list[dict[str, Any]]]:
         try:
-            with self._cache_file.open() as fh:
-                raw: dict[str, Any] = json.load(fh)
-            return cast(dict[str, list[dict[str, Any]]], raw["data"])
+            return self._parse()
         except (json.JSONDecodeError, KeyError, OSError):
             logger.warning("Cache file corrupt or invalid, re-downloading")
             self._cache_file.unlink(missing_ok=True)
             self._download()
-            with self._cache_file.open() as fh:
-                raw = json.load(fh)
-            return cast(dict[str, list[dict[str, Any]]], raw["data"])
+        try:
+            return self._parse()
+        except (json.JSONDecodeError, KeyError, OSError) as exc:
+            raise RuntimeError(f"Cache still corrupt after re-download: {exc}") from exc
+
+    def _parse(self) -> dict[str, list[dict[str, Any]]]:
+        """Open and parse the cache file, returning the card data dict."""
+        with self._cache_file.open() as fh:
+            raw: dict[str, Any] = json.load(fh)
+        return cast(dict[str, list[dict[str, Any]]], raw["data"])

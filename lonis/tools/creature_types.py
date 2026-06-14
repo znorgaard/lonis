@@ -36,7 +36,10 @@ def creature_types(output: Path, *, fmt: str = "commander") -> None:
         logger.warning("No creature types found for format %r — writing empty output", fmt)
     metrics = [
         CreatureTypeMetric(creature_type=ct, count=count)
-        for ct, count in sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+        for ct, count in sorted(
+            counts.items(),
+            key=lambda item: (-item[1], item[0]),  # most common first, ties alphabetical
+        )
     ]
     with MetricWriter(CreatureTypeMetric, output) as writer:
         writer.writeall(metrics)

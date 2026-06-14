@@ -106,3 +106,16 @@ def test_load_raises_on_download_failure(tmp_path: Path, mocker: MockerFixture) 
     cache = MtgDataCache(cache_dir=tmp_path)
     with pytest.raises(RuntimeError, match="Failed to download"):
         cache.load()
+
+
+def test_load_raises_when_redownload_still_corrupt(tmp_path: Path, mocker: MockerFixture) -> None:
+    cache_file = tmp_path / "AtomicCards.json"
+    cache_file.write_text("first corrupt content")
+
+    def fake_download(_url: str, dest: str) -> None:
+        Path(dest).write_text("second corrupt content")
+
+    mocker.patch("urllib.request.urlretrieve", side_effect=fake_download)
+    cache = MtgDataCache(cache_dir=tmp_path)
+    with pytest.raises(RuntimeError, match="Cache still corrupt after re-download"):
+        cache.load()
