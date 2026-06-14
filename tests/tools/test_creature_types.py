@@ -1,5 +1,6 @@
 """End-to-end tests for the creature_types tool."""
 
+import logging
 from pathlib import Path
 
 import pytest
@@ -134,7 +135,7 @@ def test_creature_types_invalid_format_raises(tmp_path: Path, mocker: MockerFixt
 
 
 def test_creature_types_empty_result_writes_header_only(
-    tmp_path: Path, mocker: MockerFixture
+    tmp_path: Path, mocker: MockerFixture, caplog: pytest.LogCaptureFixture
 ) -> None:
     data = {
         "Lightning Bolt": [
@@ -150,6 +151,8 @@ def test_creature_types_empty_result_writes_header_only(
     }
     mocker.patch.object(MtgDataCache, "load", return_value=data)
     output = tmp_path / "empty.tsv"
-    creature_types(output)
+    with caplog.at_level(logging.WARNING, logger="lonis.tools.creature_types"):
+        creature_types(output)
     metrics = list(CreatureTypeMetric.read(output))
     assert metrics == []
+    assert "No creature types found" in caplog.text
