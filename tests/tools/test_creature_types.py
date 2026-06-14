@@ -67,7 +67,7 @@ _ATOMIC_DATA = {
 def test_creature_types_writes_correct_types(tmp_path: Path, mocker: MockerFixture) -> None:
     mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
     output = tmp_path / "out.tsv"
-    creature_types(output)
+    creature_types(output=output)
     creature_type_names = {m.creature_type for m in CreatureTypeMetric.read(output)}
     assert creature_type_names == {"Elf", "Druid", "Goblin", "Scout"}
 
@@ -75,7 +75,7 @@ def test_creature_types_writes_correct_types(tmp_path: Path, mocker: MockerFixtu
 def test_creature_types_counts_are_correct(tmp_path: Path, mocker: MockerFixture) -> None:
     mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
     output = tmp_path / "out.tsv"
-    creature_types(output)
+    creature_types(output=output)
     metrics = {m.creature_type: m.count for m in CreatureTypeMetric.read(output)}
     assert metrics["Elf"] == 1
     assert metrics["Druid"] == 1
@@ -118,7 +118,7 @@ def test_creature_types_sorted_count_desc_then_alpha(tmp_path: Path, mocker: Moc
     }
     mocker.patch.object(MtgDataCache, "load", return_value=data)
     output = tmp_path / "sorted.tsv"
-    creature_types(output)
+    creature_types(output=output)
     metrics = list(CreatureTypeMetric.read(output))
     # Druid=2, Elf=2 (tie → alpha: Druid < Elf), Goblin=1, Scout=1 (tie → Goblin < Scout)
     assert metrics[0].creature_type == "Druid"
@@ -131,7 +131,7 @@ def test_creature_types_invalid_format_raises(tmp_path: Path, mocker: MockerFixt
     mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
     output = tmp_path / "out.tsv"
     with pytest.raises(ValueError, match="notaformat"):
-        creature_types(output, fmt="notaformat")
+        creature_types(output=output, fmt="notaformat")
 
 
 def test_creature_types_empty_result_writes_header_only(
@@ -152,7 +152,7 @@ def test_creature_types_empty_result_writes_header_only(
     mocker.patch.object(MtgDataCache, "load", return_value=data)
     output = tmp_path / "empty.tsv"
     with caplog.at_level(logging.WARNING, logger="lonis.tools.creature_types"):
-        creature_types(output)
+        creature_types(output=output)
     metrics = list(CreatureTypeMetric.read(output))
     assert metrics == []
     assert "No creature types found" in caplog.text

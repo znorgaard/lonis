@@ -21,7 +21,7 @@ class CreatureTypeMetric(Metric):
     count: int
 
 
-def creature_types(output: Path, *, fmt: str = "commander") -> None:
+def creature_types(*, output: Path, fmt: str = "commander") -> None:
     """
     Report all creature types and the number of cards with each type in a format.
 
