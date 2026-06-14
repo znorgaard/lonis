@@ -139,7 +139,7 @@ def test_creature_types_invalid_format_raises(tmp_path: Path, mocker: MockerFixt
     mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
     output = tmp_path / "out.tsv"
     with pytest.raises(ValueError, match="notaformat"):
-        creature_types(output=output, fmt="notaformat")
+        creature_types(output=output, format="notaformat")
 
 
 def test_creature_types_empty_result_writes_header_only(
@@ -167,11 +167,11 @@ def test_creature_types_empty_result_writes_header_only(
     assert "No creature types found" in caplog.text
 
 
-def test_creature_types_colors_filter(tmp_path: Path, mocker: MockerFixture) -> None:
+def test_creature_types_identity_filter(tmp_path: Path, mocker: MockerFixture) -> None:
     # Elvish Mystic is G, Goblin Guide is R — filtering to G should exclude Goblin/Scout
     mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
-    output = tmp_path / "colors.tsv"
-    creature_types(output=output, colors="G")
+    output = tmp_path / "identity.tsv"
+    creature_types(output=output, identity="G")
     creature_type_names = {m.creature_type for m in CreatureTypeMetric.read(output)}
     assert "Elf" in creature_type_names
     assert "Druid" in creature_type_names
@@ -179,8 +179,8 @@ def test_creature_types_colors_filter(tmp_path: Path, mocker: MockerFixture) -> 
     assert "Scout" not in creature_type_names
 
 
-def test_creature_types_invalid_colors_raises(tmp_path: Path, mocker: MockerFixture) -> None:
+def test_creature_types_invalid_identity_raises(tmp_path: Path, mocker: MockerFixture) -> None:
     mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
     output = tmp_path / "out.tsv"
     with pytest.raises(ValueError, match="Invalid color"):
-        creature_types(output=output, colors="X")
+        creature_types(output=output, identity="X")

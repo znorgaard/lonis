@@ -21,24 +21,24 @@ class CreatureTypeMetric(Metric):
     count: int
 
 
-def creature_types(*, output: Path, fmt: str = "commander", colors: str | None = None) -> None:
+def creature_types(*, output: Path, format: str = "commander", identity: str | None = None) -> None:
     """Report all creature types and the number of cards with each type in a format.
 
     Args:
         output: Path to write the output TSV file.
-        fmt: Magic: The Gathering format to filter cards by (e.g. commander, modern, standard).
-        colors: Commander color identity filter as MTG color letters (W, U, B, R, G), e.g. WUG.
-                Only cards whose color identity fits within these colors are included.
-                Omit to include all colors.
+        format: Magic: The Gathering format to filter cards by (e.g. commander, modern, standard).
+        identity: Commander color identity filter as MTG color letters (W, U, B, R, G), e.g. WUG.
+                  Only cards whose color identity fits within these colors are included.
+                  Omit to include all colors.
     """
     data = MtgDataCache().load()
     card_set = MtgCardSet.from_atomic_data(data)
-    card_set = card_set.filter_format(fmt)
-    if colors is not None:
-        card_set = card_set.filter_color_identity(colors)
+    card_set = card_set.filter_format(format)
+    if identity is not None:
+        card_set = card_set.filter_color_identity(identity)
     counts = card_set.filter_creatures().creature_type_counts()
     if not counts:
-        logger.warning("No creature types found for format %r — writing empty output", fmt)
+        logger.warning("No creature types found for format %r — writing empty output", format)
     metrics = [
         CreatureTypeMetric(creature_type=ct, count=count)
         for ct, count in sorted(
