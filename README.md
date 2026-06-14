@@ -44,7 +44,7 @@ You can specify a different magic format or restrict based on color identity.
 
 ```bash
 uv run lonis creature-types \
-    --format commander \
+    --fmt commander \
     --identity ug
     --output simic_creature_types.tsv
 ```

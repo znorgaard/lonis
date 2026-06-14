@@ -139,7 +139,7 @@ def test_creature_types_invalid_format_raises(tmp_path: Path, mocker: MockerFixt
     mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
     output = tmp_path / "out.tsv"
     with pytest.raises(ValueError, match="notaformat"):
-        creature_types(output=output, format="notaformat")
+        creature_types(output=output, fmt="notaformat")
 
 
 def test_creature_types_empty_result_writes_header_only(
