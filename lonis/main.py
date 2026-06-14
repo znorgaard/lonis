@@ -6,18 +6,17 @@ from collections.abc import Callable
 
 import defopt
 
-from lonis.tools.hello import hello
+from lonis.tools.creature_types import creature_types
 
 logger = logging.getLogger(__name__)
 
 _tools: list[Callable[..., None]] = [
-    hello,
+    creature_types,
 ]
 
 
 def setup_logging(level: str = "INFO") -> None:
-    """
-    Set up basic logging to print to the console.
+    """Set up basic logging to print to the console.
 
     Args:
         level: Logging level string (e.g. "INFO", "DEBUG", "WARNING").

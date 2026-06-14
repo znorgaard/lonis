@@ -29,3 +29,6 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Superpowers workflow artifacts (plans, specs, reviews)
+docs/superpowers/
