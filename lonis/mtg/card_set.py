@@ -59,9 +59,11 @@ class MtgCardSet:
             ValueError: If fmt is not a recognized format name.
         """
         if self._cards:
-            # Keys from the first card work here because mtgjson emits a consistent
-            # legalities object across all cards.
-            valid_formats = set(self._cards[0].legalities.keys())
+            # Collect format names from all cards — not every card appears in every format,
+            # so we take the union across all legalities dicts.
+            valid_formats: set[str] = set()
+            for card in self._cards:
+                valid_formats.update(card.legalities.keys())
             if fmt not in valid_formats:
                 raise ValueError(f"Unknown format {fmt!r}. Valid formats: {sorted(valid_formats)}")
         return MtgCardSet(tuple(c for c in self._cards if c.legalities.get(fmt) == _LEGAL))

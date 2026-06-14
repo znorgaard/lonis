@@ -78,6 +78,6 @@ class MtgDataCache:
 
     def _parse(self) -> dict[str, list[dict[str, Any]]]:
         """Open and parse the cache file, returning the card data dict."""
-        with self._cache_file.open() as fh:
+        with self._cache_file.open(encoding="utf-8") as fh:
             raw: dict[str, Any] = json.load(fh)
         return cast(dict[str, list[dict[str, Any]]], raw["data"])
