@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import shutil
 import urllib.error
 import urllib.request
 from datetime import date
@@ -15,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 _opener = urllib.request.build_opener()
 _opener.addheaders = [("User-Agent", "Mozilla/5.0 (compatible; lonis/0.1)")]
-urllib.request.install_opener(_opener)
 
 _ATOMIC_CARDS_URL = "https://mtgjson.com/api/v5/AtomicCards.json"
 _DEFAULT_CACHE_DIR = Path.home() / ".cache" / "lonis"
@@ -63,7 +63,8 @@ class MtgDataCache:
         self._cache_dir.mkdir(parents=True, exist_ok=True)
         logger.info("Downloading AtomicCards from %s", _ATOMIC_CARDS_URL)
         try:
-            urllib.request.urlretrieve(_ATOMIC_CARDS_URL, self._cache_file)
+            with _opener.open(_ATOMIC_CARDS_URL) as response, self._cache_file.open("wb") as fh:
+                shutil.copyfileobj(response, fh)
         except (urllib.error.URLError, OSError) as exc:
             raise RuntimeError(f"Failed to download {_ATOMIC_CARDS_URL}: {exc}") from exc
         logger.info("AtomicCards cached at %s", self._cache_file)
