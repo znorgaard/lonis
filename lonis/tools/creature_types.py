@@ -21,7 +21,25 @@ class CreatureTypeMetric(Metric):
     count: int
 
 
-def creature_types(*, output: Path, fmt: str = "commander", identity: str | None = None) -> None:
+class CardListMetric(Metric):
+    """One row of card list output: a creature card that contributed to the type counts."""
+
+    name: str
+    colors: list[str] | None
+    color_identity: list[str] | None
+    converted_mana_cost: float
+    types: list[str] | None
+    subtypes: list[str] | None
+    supertypes: list[str] | None
+
+
+def creature_types(
+    *,
+    output: Path,
+    fmt: str = "commander",
+    identity: str | None = None,
+    card_list: Path | None = None,
+) -> None:
     """Report all creature types and the number of cards with each type in a format.
 
     Args:
@@ -30,13 +48,16 @@ def creature_types(*, output: Path, fmt: str = "commander", identity: str | None
         identity: Commander color identity filter as MTG color letters (W, U, B, R, G), e.g. WUG.
                   Only cards whose color identity fits within these colors are included.
                   Omit to include all colors.
+        card_list: Optional path to write a TSV of all creature cards that contributed to the
+                   counts. Omit to skip writing the card list.
     """
     data = MtgDataCache().load()
     card_set = MtgCardSet.from_atomic_data(data)
     card_set = card_set.filter_format(fmt)
     if identity is not None:
         card_set = card_set.filter_color_identity(identity)
-    counts = card_set.filter_creatures().creature_type_counts()
+    creature_set = card_set.filter_creatures()
+    counts = creature_set.creature_type_counts()
     if not counts:
         logger.warning("No creature types found for format %r — writing empty output", fmt)
     metrics = [
@@ -48,3 +69,17 @@ def creature_types(*, output: Path, fmt: str = "commander", identity: str | None
     ]
     with MetricWriter(CreatureTypeMetric, output) as writer:
         writer.writeall(metrics)
+    if card_list is not None:
+        with MetricWriter(CardListMetric, card_list) as writer:
+            writer.writeall(
+                CardListMetric(
+                    name=card.name,
+                    colors=sorted(card.colors) or None,
+                    color_identity=sorted(card.color_identity) or None,
+                    converted_mana_cost=card.converted_mana_cost,
+                    types=sorted(card.types) or None,
+                    subtypes=sorted(card.subtypes) or None,
+                    supertypes=sorted(card.supertypes) or None,
+                )
+                for card in sorted(creature_set, key=lambda c: c.name)
+            )

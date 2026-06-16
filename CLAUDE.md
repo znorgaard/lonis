@@ -36,6 +36,63 @@ Run a single test: `uv run --locked pytest tests/tools/test_creature_types.py::t
 - `tests/conftest.py` provides a `datadir` fixture pointing to `tests/data/` for file-based tests.
 - Logging output is captured with `caplog`; assert against `caplog.text`.
 
+## AtomicCards Data Schema
+
+Card data is sourced from [mtgjson.com](https://mtgjson.com/data-models/card/card-atomic/) (`AtomicCards.json`), cached daily at `~/.cache/lonis/AtomicCards.json`. The top-level structure is a dict mapping card name → list of face objects (single-face cards have one element; multi-face cards have one per face).
+
+### Always-present fields on each face
+
+| Field | Type | Definition |
+|---|---|---|
+| `name` | `str` | Canonical English card name |
+| `layout` | `str` | Print layout (`normal`, `transform`, `split`, `adventure`, `token`, …) |
+| `type` | `str` | Full type line as printed (e.g. `"Legendary Creature — Elf Wizard"`) |
+| `types` | `list[str]` | Main types extracted from the type line (e.g. `["Creature"]`) |
+| `subtypes` | `list[str]` | Subtypes after the em-dash (e.g. `["Elf", "Wizard"]`) |
+| `supertypes` | `list[str]` | Supertypes (e.g. `["Legendary"]`, `["Basic"]`, `["Snow"]`) |
+| `colorIdentity` | `list[str]` | Color identity letters for Commander (`W`, `U`, `B`, `R`, `G`) |
+| `colors` | `list[str]` | Colors the card actually is (not counting reminder text) |
+| `manaValue` | `float` | Converted mana cost (canonical name; `convertedManaCost` is a legacy alias) |
+| `convertedManaCost` | `float` | Legacy alias for `manaValue` |
+| `legalities` | `dict[str, str]` | Format → legality string (`"Legal"`, `"Banned"`, `"Restricted"`, `"Not Legal"`) |
+| `printings` | `list[str]` | Set codes where this card has appeared |
+| `identifiers` | `dict` | Cross-reference IDs (Scryfall, TCGPlayer, etc.) |
+| `foreignData` | `list[dict]` | Translated name/text per language |
+| `purchaseUrls` | `dict` | Store purchase links (TCGPlayer, Cardmarket, etc.) |
+| `isFunny` | `bool` | True for Un-set / silver-border / acorn cards |
+
+### Conditional fields (only present when relevant)
+
+| Field | When present | Definition |
+|---|---|---|
+| `manaCost` | Cards with a mana cost | Mana cost string (e.g. `"{2}{G}{G}"`) |
+| `text` | Cards with rules text | Oracle rules text |
+| `power` | Creatures and some artifacts | Power as string (e.g. `"3"`, `"*"`) |
+| `toughness` | Creatures and some artifacts | Toughness as string |
+| `loyalty` | Planeswalkers | Starting loyalty as string |
+| `life` | Vanguard cards | Life modifier |
+| `hand` | Vanguard cards | Hand size modifier |
+| `keywords` | Cards with keyword abilities | List of keyword names (e.g. `["Flying", "Vigilance"]`) |
+| `producedMana` | Mana-producing cards | Colors/types of mana this card can produce |
+| `colorIndicator` | Cards with a color indicator dot | Colors from the color indicator (no mana cost) |
+| `asciiName` | Cards with non-ASCII names | ASCII-safe version of `name` |
+| `faceName` | Multi-face cards | Name of this specific face |
+| `side` | Multi-face cards | Which face this is (`a`, `b`, `c`, …) |
+| `faceConvertedManaCost` | Multi-face cards | CMC of this face only |
+| `faceManaValue` | Multi-face cards | Mana value of this face only |
+| `edhrecRank` | Cards tracked by EDHREC | Popularity rank (lower = more popular) |
+| `edhrecSaltiness` | Cards tracked by EDHREC | How much opponents dislike seeing this card |
+| `isReserved` | Reserved List cards | True if on the Reserved List |
+| `isGameChanger` | High-impact cards | Marks format-warping cards |
+| `leadershipSkills` | Potential commanders | Legality as a commander per format |
+| `relatedCards` | Cards that reference others | Links to associated card names (tokens, etc.) |
+| `rulings` | Cards with official rulings | List of `{date, text}` rulings |
+| `subsets` | Cards in special subsets | Subset tags (e.g. Alchemy rebalances) |
+
+### Fields currently used by `MtgCard`
+
+`layout`, `types`, `subtypes`, `supertypes`, `colorIdentity`, `colors`, `convertedManaCost`, `legalities`, `isFunny`
+
 ## Code Style
 
 - **Line length**: 100

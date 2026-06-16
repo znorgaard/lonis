@@ -10,6 +10,8 @@ def _face(
     subtypes: list[str] | None = None,
     supertypes: list[str] | None = None,
     color_identity: list[str] | None = None,
+    colors: list[str] | None = None,
+    converted_mana_cost: float = 0.0,
     legalities: dict[str, str] | None = None,
     is_funny: bool = False,
 ) -> dict[str, object]:
@@ -19,6 +21,8 @@ def _face(
         "subtypes": subtypes or [],
         "supertypes": supertypes or [],
         "colorIdentity": color_identity or [],
+        "colors": colors or [],
+        "convertedManaCost": converted_mana_cost,
         "legalities": legalities or {},
         "isFunny": is_funny,
     }
@@ -117,3 +121,34 @@ def test_from_atomic_entry_is_funny_flag() -> None:
     card = MtgCard.from_atomic_entry("Chicken (Unhinged)", faces)
     assert card is not None
     assert card.is_funny is True
+
+
+def test_from_atomic_entry_colors_single_face() -> None:
+    faces = [_face(types=["Creature"], colors=["W"], legalities={})]
+    card = MtgCard.from_atomic_entry("Serra Angel", faces)
+    assert card is not None
+    assert card.colors == frozenset({"W"})
+
+
+def test_from_atomic_entry_colors_multi_face_aggregated() -> None:
+    faces = [
+        _face(layout="transform", types=["Creature"], colors=["R", "G"], legalities={}),
+        _face(layout="transform", types=["Creature"], colors=["R"], legalities={}),
+    ]
+    card = MtgCard.from_atomic_entry("Huntmaster of the Fells // Ravager of the Fells", faces)
+    assert card is not None
+    assert card.colors == frozenset({"R", "G"})
+
+
+def test_from_atomic_entry_colorless_colors() -> None:
+    faces = [_face(types=["Artifact", "Creature"], colors=[], legalities={})]
+    card = MtgCard.from_atomic_entry("Blightsteel Colossus", faces)
+    assert card is not None
+    assert card.colors == frozenset()
+
+
+def test_from_atomic_entry_converted_mana_cost() -> None:
+    faces = [_face(types=["Creature"], converted_mana_cost=3.0, legalities={})]
+    card = MtgCard.from_atomic_entry("Serra Angel", faces)
+    assert card is not None
+    assert card.converted_mana_cost == 3.0
