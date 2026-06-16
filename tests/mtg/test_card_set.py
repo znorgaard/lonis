@@ -14,6 +14,8 @@ def _make_card(
     types: list[str] | None = None,
     subtypes: list[str] | None = None,
     color_identity: list[str] | None = None,
+    colors: list[str] | None = None,
+    converted_mana_cost: float = 0.0,
     legalities: dict[str, str] | None = None,
 ) -> MtgCard:
     return MtgCard(
@@ -23,6 +25,8 @@ def _make_card(
         subtypes=frozenset(subtypes or []),
         supertypes=frozenset(),
         color_identity=frozenset(color_identity or []),
+        colors=frozenset(colors or []),
+        converted_mana_cost=converted_mana_cost,
         legalities=legalities or {},
         is_funny=False,
     )
