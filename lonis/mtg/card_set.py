@@ -97,6 +97,9 @@ class MtgCardSet:
     def filter_single_subtype(self) -> MtgCardSet:
         """Return a new MtgCardSet containing only cards with exactly one subtype.
 
+        This filter is type-agnostic — it counts all subtypes on the card regardless
+        of card type. Typically applied after ``filter_creatures()``.
+
         Returns:
             A filtered MtgCardSet.
         """

@@ -292,3 +292,36 @@ def test_creature_types_single_subtype_flag(tmp_path: Path, mocker: MockerFixtur
     creature_types(output=output, single_subtype=True)
     metrics = {m.creature_type: m.count for m in CreatureTypeMetric.read(output)}
     assert metrics == {"Goblin": 1}
+
+
+def test_creature_types_single_subtype_card_list(tmp_path: Path, mocker: MockerFixture) -> None:
+    data = {
+        "Elvish Mystic": [
+            {
+                "layout": "normal",
+                "types": ["Creature"],
+                "subtypes": ["Elf", "Druid"],
+                "supertypes": [],
+                "colorIdentity": ["G"],
+                "legalities": {"commander": "Legal"},
+                "isFunny": False,
+            }
+        ],
+        "Pure Goblin": [
+            {
+                "layout": "normal",
+                "types": ["Creature"],
+                "subtypes": ["Goblin"],
+                "supertypes": [],
+                "colorIdentity": ["R"],
+                "legalities": {"commander": "Legal"},
+                "isFunny": False,
+            }
+        ],
+    }
+    mocker.patch.object(MtgDataCache, "load", return_value=data)
+    card_list = tmp_path / "cards.tsv"
+    creature_types(output=tmp_path / "out.tsv", card_list=card_list, single_subtype=True)
+    names = {m.name for m in CardListMetric.read(card_list)}
+    assert "Pure Goblin" in names
+    assert "Elvish Mystic" not in names

@@ -51,7 +51,8 @@ def creature_types(
                   Omit to include all colors.
         card_list: Optional path to write a TSV of all creature cards that contributed to the
                    counts. Omit to skip writing the card list.
-        single_subtype: Only include creatures that have exactly one subtype.
+        single_subtype: If True, restrict the creature pool to cards with exactly one subtype
+                        before computing type counts.
     """
     data = MtgDataCache().load()
     card_set = MtgCardSet.from_atomic_data(data)

@@ -167,3 +167,13 @@ def test_filter_single_subtype_excludes_zero_subtypes() -> None:
     cards = (_make_card("Wall of Stone", types=["Creature"], subtypes=[]),)
     result = MtgCardSet(cards).filter_single_subtype()
     assert list(result) == []
+
+
+def test_filter_single_subtype_mixed_set() -> None:
+    cards = (
+        _make_card("Pure Goblin", types=["Creature"], subtypes=["Goblin"]),
+        _make_card("Elvish Mystic", types=["Creature"], subtypes=["Elf", "Druid"]),
+        _make_card("Wall of Stone", types=["Creature"], subtypes=[]),
+    )
+    result = MtgCardSet(cards).filter_single_subtype()
+    assert {c.name for c in result} == {"Pure Goblin"}
