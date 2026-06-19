@@ -149,3 +149,21 @@ def test_creature_type_counts() -> None:
     )
     counts = MtgCardSet(cards).creature_type_counts()
     assert counts == {"Elf": 2, "Druid": 2, "Goblin": 1, "Scout": 1}
+
+
+def test_filter_single_subtype_includes_single_subtype() -> None:
+    cards = (_make_card("Pure Goblin", types=["Creature"], subtypes=["Goblin"]),)
+    result = MtgCardSet(cards).filter_single_subtype()
+    assert {c.name for c in result} == {"Pure Goblin"}
+
+
+def test_filter_single_subtype_excludes_multi_subtype() -> None:
+    cards = (_make_card("Elvish Mystic", types=["Creature"], subtypes=["Elf", "Druid"]),)
+    result = MtgCardSet(cards).filter_single_subtype()
+    assert list(result) == []
+
+
+def test_filter_single_subtype_excludes_zero_subtypes() -> None:
+    cards = (_make_card("Wall of Stone", types=["Creature"], subtypes=[]),)
+    result = MtgCardSet(cards).filter_single_subtype()
+    assert list(result) == []
