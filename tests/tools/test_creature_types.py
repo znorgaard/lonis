@@ -67,6 +67,17 @@ _ATOMIC_DATA = {
             "isFunny": False,
         }
     ],
+    "Pure Goblin": [
+        {
+            "layout": "normal",
+            "types": ["Creature"],
+            "subtypes": ["Goblin"],
+            "supertypes": [],
+            "colorIdentity": ["R"],
+            "legalities": {"commander": "Legal", "modern": "Legal"},
+            "isFunny": False,
+        }
+    ],
 }
 
 
@@ -246,3 +257,14 @@ def test_creature_types_card_list_fields(tmp_path: Path, mocker: MockerFixture) 
     assert row.color_identity == ["G"]
     assert row.converted_mana_cost == 1.0
     assert set(row.subtypes or []) == {"Elf", "Druid"}
+
+
+def test_creature_types_single_subtype_flag(tmp_path: Path, mocker: MockerFixture) -> None:
+    # Elvish Mystic has 2 subtypes (Elf, Druid) — should be excluded.
+    # Goblin Guide has 2 subtypes (Goblin, Scout) — should be excluded.
+    # Pure Goblin has 1 subtype (Goblin) — should be included.
+    mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
+    output = tmp_path / "out.tsv"
+    creature_types(output=output, single_subtype=True)
+    metrics = {m.creature_type: m.count for m in CreatureTypeMetric.read(output)}
+    assert metrics == {"Goblin": 1}
