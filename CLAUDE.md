@@ -93,6 +93,29 @@ Card data is sourced from [mtgjson.com](https://mtgjson.com/data-models/card/car
 
 `layout`, `types`, `subtypes`, `supertypes`, `colorIdentity`, `colors`, `convertedManaCost`, `legalities`, `isFunny`
 
+## Scryfall API
+
+A structured reference for the Scryfall REST API is at `docs/scryfall_api.md`. Read it into context when:
+- Adding any tool that calls the Scryfall API (endpoints, parameters, field names, pagination).
+- Working with color arrays, mana cost notation, or mana symbology.
+- Implementing or reviewing any HTTP request logic targeting `api.scryfall.com`.
+- Deciding whether to use a live API endpoint vs. bulk data download.
+
+### API Rate Limits — Never Exceed
+
+**CRITICAL: Exceeding rate limits can result in a permanent ban of this application.**
+
+| Endpoint | Hard limit |
+|---|---|
+| `/cards/search`, `/cards/named`, `/cards/random`, `/cards/collection` | 2 requests/second |
+| All other `api.scryfall.com` endpoints | 10 requests/second |
+
+Rules:
+- **Always use bulk data** (`GET /bulk-data`) instead of repeated API calls when looking up large numbers of cards, names, or images. Bulk files are served from `*.scryfall.io` with no rate limit.
+- **Cache all API responses** for at least 24 hours before re-fetching.
+- Never build loops that call card endpoints without deliberate per-request delays that respect the limits above.
+- If an HTTP 429 is received, back off immediately and do not retry until the 30-second cooldown has elapsed.
+
 ## Code Style
 
 - **Line length**: 100
