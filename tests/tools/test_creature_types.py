@@ -67,17 +67,6 @@ _ATOMIC_DATA = {
             "isFunny": False,
         }
     ],
-    "Pure Goblin": [
-        {
-            "layout": "normal",
-            "types": ["Creature"],
-            "subtypes": ["Goblin"],
-            "supertypes": [],
-            "colorIdentity": ["R"],
-            "legalities": {"commander": "Legal", "modern": "Legal"},
-            "isFunny": False,
-        }
-    ],
 }
 
 
@@ -263,7 +252,42 @@ def test_creature_types_single_subtype_flag(tmp_path: Path, mocker: MockerFixtur
     # Elvish Mystic has 2 subtypes (Elf, Druid) — should be excluded.
     # Goblin Guide has 2 subtypes (Goblin, Scout) — should be excluded.
     # Pure Goblin has 1 subtype (Goblin) — should be included.
-    mocker.patch.object(MtgDataCache, "load", return_value=_ATOMIC_DATA)
+    data = {
+        "Elvish Mystic": [
+            {
+                "layout": "normal",
+                "types": ["Creature"],
+                "subtypes": ["Elf", "Druid"],
+                "supertypes": [],
+                "colorIdentity": ["G"],
+                "legalities": {"commander": "Legal", "modern": "Legal"},
+                "isFunny": False,
+            }
+        ],
+        "Goblin Guide": [
+            {
+                "layout": "normal",
+                "types": ["Creature"],
+                "subtypes": ["Goblin", "Scout"],
+                "supertypes": [],
+                "colorIdentity": ["R"],
+                "legalities": {"commander": "Legal", "modern": "Legal"},
+                "isFunny": False,
+            }
+        ],
+        "Pure Goblin": [
+            {
+                "layout": "normal",
+                "types": ["Creature"],
+                "subtypes": ["Goblin"],
+                "supertypes": [],
+                "colorIdentity": ["R"],
+                "legalities": {"commander": "Legal", "modern": "Legal"},
+                "isFunny": False,
+            }
+        ],
+    }
+    mocker.patch.object(MtgDataCache, "load", return_value=data)
     output = tmp_path / "out.tsv"
     creature_types(output=output, single_subtype=True)
     metrics = {m.creature_type: m.count for m in CreatureTypeMetric.read(output)}
