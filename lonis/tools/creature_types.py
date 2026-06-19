@@ -39,6 +39,7 @@ def creature_types(
     fmt: str = "commander",
     identity: str | None = None,
     card_list: Path | None = None,
+    single_subtype: bool = False,
 ) -> None:
     """Report all creature types and the number of cards with each type in a format.
 
@@ -50,6 +51,8 @@ def creature_types(
                   Omit to include all colors.
         card_list: Optional path to write a TSV of all creature cards that contributed to the
                    counts. Omit to skip writing the card list.
+        single_subtype: If True, restrict the creature pool to cards with exactly one subtype
+                        before computing type counts.
     """
     data = MtgDataCache().load()
     card_set = MtgCardSet.from_atomic_data(data)
@@ -57,6 +60,8 @@ def creature_types(
     if identity is not None:
         card_set = card_set.filter_color_identity(identity)
     creature_set = card_set.filter_creatures()
+    if single_subtype:
+        creature_set = creature_set.filter_single_subtype()
     counts = creature_set.creature_type_counts()
     if not counts:
         logger.warning("No creature types found for format %r — writing empty output", fmt)

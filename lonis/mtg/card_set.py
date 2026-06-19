@@ -94,6 +94,17 @@ class MtgCardSet:
         """
         return MtgCardSet(tuple(c for c in self._cards if "Creature" in c.types))
 
+    def filter_single_subtype(self) -> MtgCardSet:
+        """Return a new MtgCardSet containing only cards with exactly one subtype.
+
+        This filter is type-agnostic — it counts all subtypes on the card regardless
+        of card type. Typically applied after ``filter_creatures()``.
+
+        Returns:
+            A filtered MtgCardSet.
+        """
+        return MtgCardSet(tuple(c for c in self._cards if len(c.subtypes) == 1))
+
     def creature_type_counts(self) -> dict[str, int]:
         """Count how many cards of each creature subtype are in this set.
 

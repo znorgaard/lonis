@@ -27,8 +27,11 @@ Run a single test: `uv run --locked pytest tests/tools/test_creature_types.py::t
 
 1. Create `lonis/tools/<name>.py` with a single top-level function.
 2. Register it in `lonis/main.py`'s `_tools` list.
+3. Update `README.md` to document the tool and its options.
 
 `defopt` derives the CLI sub-command name and `--option` flags from the function name and typed keyword arguments. The function docstring (Google convention) provides the help text; `Args:` entries document individual flags.
+
+Whenever a CLI tool is added or an existing tool's options change (a flag is added, removed, renamed, or its default changes), update `README.md` in the same change so its documented usage and options stay in sync.
 
 ### Test conventions
 
