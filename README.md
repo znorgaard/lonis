@@ -40,13 +40,32 @@ uv run lonis creature-types \
     --output all_creature_types.tsv
 ```
 
+#### Options
+
+| Option | Default | Description |
+|---|---|---|
+| `--output` | _(required)_ | Path to write the output TSV file of creature types and their card counts. |
+| `--fmt` | `commander` | Magic: The Gathering format to filter cards by (e.g. `commander`, `modern`, `standard`). |
+| `--identity` | _(all colors)_ | Commander color identity filter as MTG color letters (`W`, `U`, `B`, `R`, `G`), e.g. `WUG`. Only cards whose color identity fits within these colors are included. |
+| `--card-list` | _(skipped)_ | Optional path to write a TSV of all creature cards that contributed to the counts. |
+| `--single-subtype` | off | Restrict the creature pool to cards with exactly one subtype before computing type counts. |
+
 You can specify a different magic format or restrict based on color identity.
 
 ```bash
 uv run lonis creature-types \
     --fmt commander \
-    --identity ug
+    --identity ug \
     --output simic_creature_types.tsv
+```
+
+Restrict to creatures with exactly one subtype and also write out the contributing cards:
+
+```bash
+uv run lonis creature-types \
+    --single-subtype \
+    --card-list simic_single_subtype_cards.tsv \
+    --output simic_single_subtype_types.tsv
 ```
 
 ## Contributing
